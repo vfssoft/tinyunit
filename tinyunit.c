@@ -10,6 +10,9 @@
 #else
 #include <sys/time.h>
 #include <sys/resource.h>
+#ifdef THTHREAD_API
+#include <pthread.h>
+#endif // THREAD_API
 #define stricmp strcasecmp
 #endif
 
@@ -205,4 +208,73 @@ void mysleep(int milliseconds) {
   usleep(milliseconds);
 #endif
 }
+
+#ifdef THREAD_API
+
+#if _WIN32
+static DWORD thread_entry(void* arg) {
+  mythread_t* t = (mythread_t*)arg;
+  t->cb(t->arg);
+  return 0;
+}
+#else
+static void* thread_entry(void* arg) {
+  mythread_t* t = (mythread_t*)arg;
+  t->cb(t->arg);
+  return NULL;
+}
+#endif
+
+int thread_create(mythread_t* t, mythread_callback cb, void* arg) {
+  t->arg = arg;
+  t->cb = cb;
+  
+#ifdef _WIN32
+  HANDLE thread;
+  
+  thread = CreateThread(
+      NULL,
+      0,
+      thread_entry,
+      t,
+      0,
+      NULL
+  );
+  if (thread == NULL) {
+    return (int) GetLastError();
+  }
+  t->handle = thread;
+#else
+  int err;
+  pthread_t thread;
+  err = pthread_create(
+      &thread,
+      NULL,
+      thread_entry,
+      t
+  );
+  if (err != 0) {
+    return err;
+  }
+  t->handle = thread;
+#endif
+  return 0;
+}
+int thread_join(mythread_t* t) {
+#if _WIN32
+  return (int)WaitForSingleObject(t->handle, INFINITE);
+#else
+  return pthread_join(t->handle, NULL);
+#endif
+}
+int thread_destroy(mythread_t* t) {
+#if _WIN32
+  return CloseHandle(t->handle);
+#else
+  // pthread_detach(t->handle);
+  return 0;
+#endif
+}
+
+#endif // THREAD_API
 

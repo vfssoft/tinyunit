@@ -207,4 +207,20 @@ long get_current_process_memory_usage();
 void mysleep(int milliseconds);
 void wait(int milliseconds);
 
+#ifdef THREAD_API
+typedef struct mythread_s mythread_t;
+typedef void (*mythread_callback)(void* arg);
+
+struct mythread_s {
+    void* handle;
+    void* arg;
+    mythread_callback cb;
+};
+
+int thread_create(mythread_t* t, mythread_callback cb, void* arg);
+int thread_join(mythread_t* t);
+int thread_destroy(mythread_t* t);
+
+#endif //THREAD_API
+
 #endif //TINYUNIT_H
