@@ -5,6 +5,10 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FATAL(msg)                                        \
   do {                                                    \
     fprintf(stderr,                                       \
@@ -222,5 +226,9 @@ int thread_join(mythread_t* t);
 int thread_destroy(mythread_t* t);
 
 #endif //THREAD_API
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //TINYUNIT_H
