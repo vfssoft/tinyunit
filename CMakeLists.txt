@@ -9,7 +9,7 @@ if(USE_THREAD_API)
     add_definitions(-DTHREAD_API)
 endif()
 
-add_library(tinyunit STATIC tinyunit.c)
+add_library(tinyunit_lib STATIC tinyunit.c)
 
 install(
         TARGETS tinyunit
