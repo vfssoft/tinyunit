@@ -12,7 +12,7 @@ endif()
 add_library(tinyunit_lib STATIC tinyunit.c)
 
 install(
-        TARGETS tinyunit
+        TARGETS tinyunit_lib
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
 )
